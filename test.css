@@ -1,0 +1,20 @@
+.W_TextBlock{
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    width: 100%;
+    height: auto;
+    gap: 10px;
+    background-color: #252525;
+    border-radius: 27px;
+    h1{
+        font-family: "Inter";
+        color: #FFFFFF;
+        font-size: 36px;
+    }
+    p{
+        font-family: "Inter";
+        color: #959595;
+        font-size: 32px;
+    }
+}
