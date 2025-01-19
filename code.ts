@@ -15,7 +15,7 @@ function getSelectedAutoLayoutInfo() {
     return { isSelected: false }
 }
 figma.showUI(__html__, {
-    width: 460,
+    width: 1240,
     height: 660,
     title: 'Конфигуратор рассылки',
 })
@@ -33,8 +33,8 @@ figma.on('selectionchange', () => {
 })
 async function convertAutoLayoutToTable(frame: FrameNode) {
     // Check if the node is AutoLayout
-    if (!frame.layoutMode) {
-        figma.notify('Selected node is not an AutoLayout frame')
+    if (frame.layoutMode === "NONE") {
+        figma.notify('Выбранный элемент не является автолейаутом')
         return
     }
     // Extract properties of the frame
@@ -152,6 +152,16 @@ function findMaxWidth(node: FrameNode): number {
 
     return maxWidth
 }
+function isNodeWithImageFill(node: SceneNode): boolean {
+    // This checks if the node can have fills (e.g. RECTANGLE, FRAME, ELLIPSE, etc.),
+    // and if at least one fill is an IMAGE fill.
+    console.log(node, "IMAGE DETECTED")
+    return (
+      'fills' in node &&
+      !!node.fills &&
+      node.fills.some((paint) => paint.type === 'IMAGE')
+    );
+  }  
 function getWidthProperty(node: SceneNode): string {
     // For AutoLayout nodes (Frame or Instance), check if width is set to "fill"
     if ((node.type === 'FRAME' || node.type === 'INSTANCE') && node.layoutMode) {
@@ -185,8 +195,12 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                     html += await processChildNode(child)
                 }
                 html += `</table></td></tr>`
-            } else if (node.name === 'Image Frame') {
-                html += `<img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}">`
+            } else if (isNodeWithImageFill(node) === true) {
+                if (node.parent.layoutMode === 'HORIZONTAL') {
+                    html += `<td width="${node.width}" height="${node.height}" style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
+                } else {
+                    html += `<td width="${node.width}" height="${node.height}"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
+                }
             }
             break
         case 'FRAME':
@@ -207,7 +221,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                         html += await processChildNode(child)
                     }
                     html += `</table></td></div>`
-                } else if (node.name === 'Image Frame') {
+                } else if (isNodeWithImageFill(node) === true) {
                     if (node.parent.layoutMode === 'HORIZONTAL') {
                         html += `<td width="${node.width}" height="${node.height}" style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
                     } else {
@@ -230,8 +244,12 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                         html += await processChildNode(child)
                     }
                     html += `</table></td></tr>`
-                } else if (node.name === 'Image Frame') {
-                    html += `<img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}">`
+                } else if (isNodeWithImageFill(node) === true) {
+                    if (node.parent.layoutMode === 'HORIZONTAL') {
+                        html += `<td width="${node.width}" height="${node.height}" style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
+                    } else {
+                        html += `<td width="${node.width}" height="${node.height}"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
+                    }
                 }
             }
             break

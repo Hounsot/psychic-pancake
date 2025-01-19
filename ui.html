@@ -21,7 +21,7 @@
 
   body {
     background-color: var(--bg_color);
-    width: 460px;
+    width: 100%;
     height: 660px;
     overflow: hidden;
     display: flex;
@@ -38,6 +38,7 @@
     padding: 0;
     margin: 0;
     height: 100%;
+    min-width: 460px;
   }
 
   .O_MainWindow {
@@ -150,46 +151,68 @@
   .U_TextCenter {
     text-align: center;
   }
+  .O_WindowAndPreview{
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .O_Preview{
+    background-color: darkgray;
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    iframe{
+      width: 100%;
+      height: 100%;
+    }
+  }
 </style>
-
-<div class="O_Window">
-  <div class="O_MainWindow">
-    <div class="M_ChosenWindow">
-      <p class="A_Title U_Dimmed U_TextCenter">Выберите фрейм с готовой рассылкой</p>
+<div class="O_WindowAndPreview">
+  <div class="O_Window">
+    <div class="O_MainWindow">
+      <div class="M_ChosenWindow">
+        <p class="A_Title U_Dimmed U_TextCenter">Выберите фрейм с готовой рассылкой</p>
+      </div>
+      <div class="M_FrameInfo U_Hidden">
+        <p class="A_Title U_FrameName">Название рассылки</p>
+        <div class="W_FrameStats">
+          <p>Width:</p>
+          <p id="Width">0</p>
+        </div>
+        <div class="W_FrameStats">
+          <p>Height:</p>
+          <p id="Height">0</p>
+        </div>
+        <div class="W_FrameStats">
+          <p>Блоков:</p>
+          <p>0</p>
+        </div>
+        <div class="W_FrameStats">
+          <p>Вложений:</p>
+          <p>0</p>
+  
+        </div>
+      </div>
+      <div class="M_GeneratedCode U_Hidden">
+        <div class="W_TitleCross">
+          <p class="A_Title">Скопируйте этот код</p>
+        </div>
+        <textarea class="A_HtmlOutput">
+        </textarea>
+      </div>
+      <div class="A_Button U_Hidden">
+        Конвертировать
+      </div>
     </div>
-    <div class="M_FrameInfo U_Hidden">
-      <p class="A_Title U_FrameName">Название рассылки</p>
-      <div class="W_FrameStats">
-        <p>Width:</p>
-        <p id="Width">0</p>
-      </div>
-      <div class="W_FrameStats">
-        <p>Height:</p>
-        <p id="Height">0</p>
-      </div>
-      <div class="W_FrameStats">
-        <p>Блоков:</p>
-        <p>0</p>
-      </div>
-      <div class="W_FrameStats">
-        <p>Вложений:</p>
-        <p>0</p>
-
-      </div>
-    </div>
-    <div class="M_GeneratedCode U_Hidden">
-      <div class="W_TitleCross">
-        <p class="A_Title">Скопируйте этот код</p>
-      </div>
-      <textarea class="A_HtmlOutput">
-      </textarea>
-    </div>
-    <div class="A_Button U_Hidden">
-      Конвертировать
+    <div class="O_Footer">
+      <a href="">Открыть инструкцию</a>
     </div>
   </div>
-  <div class="O_Footer">
-    <a href="">Открыть инструкцию</a>
+  <div class="O_Preview">
+    <iframe frameborder="0">
+    </iframe>
   </div>
 </div>
 <script>
@@ -200,12 +223,20 @@
     const msg = event.data.pluginMessage;
     if (msg.type === 'copy-html') {
       if (msg.html) {
-        document.querySelector('.A_HtmlOutput').innerHTML = msg.html
-        document.querySelector('.M_GeneratedCode').classList.remove('U_Hidden')
-        document.querySelector(".M_FrameInfo").classList.add('U_Hidden')
-        document.querySelector(".A_Button").classList.add('U_Hidden')
-        document.querySelector('.M_ChosenWindow').classList.add('U_Hidden')
-        document.querySelector('.M_FrameInfo').classList.add('U_Hidden')
+        // 1. Put HTML into the textarea (so the user can copy it).
+        document.querySelector('.A_HtmlOutput').innerHTML = msg.html;
+        
+        // 2. Load HTML in the iframe:
+        const previewIframe = document.querySelector('.O_Preview iframe');
+        previewIframe.srcdoc = msg.html; 
+        // ^ This will render the HTML inside the iframe.
+
+        // 3. Show/hide relevant UI parts
+        document.querySelector('.M_GeneratedCode').classList.remove('U_Hidden');
+        document.querySelector(".M_FrameInfo").classList.add('U_Hidden');
+        document.querySelector(".A_Button").classList.add('U_Hidden');
+        document.querySelector('.M_ChosenWindow').classList.add('U_Hidden');
+        document.querySelector('.M_FrameInfo').classList.add('U_Hidden');
       }
     }
     if (msg.type === 'auto-layout-check') {
