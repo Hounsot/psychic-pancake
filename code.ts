@@ -186,7 +186,7 @@ function getAlignCenterAttribute(node: FrameNode | InstanceNode): string {
   }  
 async function processChildNode(node: SceneNode): Promise<string> {
     let html = ''
-    let primaryAxisAlignItems = node.primaryAxisAlignItems === 'MIN' && node.counterAxisAlignItems === 'CENTER' && node.layoutMode === 'VERTICAL' ? `align="center"` : `:)`
+    let primaryAxisAlignItems = node.primaryAxisAlignItems === 'MIN' && node.counterAxisAlignItems === 'CENTER' && node.layoutMode === 'VERTICAL' ? `align="center"` : ``
     let maxWidth = 0
     switch (node.type) {
         case 'INSTANCE':
@@ -219,7 +219,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
             var gap = parent.itemSpacing || 0          
             var index = parent.children.indexOf(node)
             var isLastChild = index === parent.children.length - 1
-            const centerAlignAttr = getAlignCenterAttribute(node);
+            var centerAlignAttr = getAlignCenterAttribute(node);
             if (isLastChild) {
                 console.warn("LAST CHILD IN PARENT ELEMENT")
                 console.log(node)
@@ -227,19 +227,19 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                 console.log(gap)
                 if (node.parent.layoutMode === 'HORIZONTAL') {
                     if (node.layoutMode === 'HORIZONTAL' && node.name != 'Image Frame') {
-                        html += `<div><tr id="${node.name}"><td id="${node.name}" ${primaryAxisAlignItems}>`
+                        html += `<td id="${node.name}" ${primaryAxisAlignItems}><table><tr>`
                         for (const child of node.children) {
                             html += await processChildNode(child)
                         }
-                        html += `</td></tr></div>`
+                        html += `</tr></table></td>`
                     } else if (node.layoutMode === 'VERTICAL' && node.name != 'Image Frame') {
-                        html += `<div><td id="${node.name}, ${node.parent.layoutMode}" style="vertical-align: top; ${extractStyles(node)}" ${primaryAxisAlignItems}><table ${centerAlignAttr} id="${
+                        html += `<td id="${node.name}, ${node.parent.layoutMode}" style="vertical-align: top; ${extractStyles(node)}" ${primaryAxisAlignItems}><table ${centerAlignAttr} id="${
                             node.name
                         }" style="vertical-align: top; border-collapse: collapse; table-layout: fixed; width: ${maxWidth}px; height: auto">`
                         for (const child of node.children) {
                             html += await processChildNode(child)
                         }
-                        html += `</table></td></div>`
+                        html += `</table></td>`
                     } else if (isNodeWithImageFill(node) === true) {
                         if (node.parent.layoutMode === 'HORIZONTAL') {
                             html += `<td width="${node.width}" height="${node.height}" style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
@@ -255,7 +255,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                         }
                         html += `</tr>`
                     } else if (node.layoutMode === 'VERTICAL' && node.name != 'Image Frame') {
-                        html += `<tr id="${node.name}" style="vertical-align: top;"><td id="${node.name}" style="vertical-align: top; ${extractStyles(node)}" ${primaryAxisAlignItems}><table ${centerAlignAttr} id="${
+                        html += `<tr ${centerAlignAttr} id="${node.name}" style="vertical-align: top;"><td id="${node.name}" style="vertical-align: top; ${extractStyles(node)}" ${centerAlignAttr} ${primaryAxisAlignItems}><table ${centerAlignAttr} id="${
                             node.name
                         }" style="vertical-align: top; border-collapse: collapse; table-layout: fixed; width: ${maxWidth}px; height: auto">`
                         for (const child of node.children) {
@@ -266,7 +266,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                         if (node.parent.layoutMode === 'HORIZONTAL') {
                             html += `<td ${centerAlignAttr} width="${node.width}" height="${node.height}" style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
                         } else {
-                            html += `<td ${centerAlignAttr} width="${node.width}" height="${node.height}"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>`
+                            html += `<tr ${centerAlignAttr} id="problem" width="${node.width}" height="${node.height}"><td><img style='display: block' src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td> </tr>\n`
                         }
                     }
                 }    
@@ -278,11 +278,11 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                 console.log(gap)
                 if (node.parent.layoutMode === 'HORIZONTAL') {
                     if (node.layoutMode === 'HORIZONTAL' && node.name != 'Image Frame') {
-                        html += `<tr id="${node.name}"><td id="${node.name}" ${primaryAxisAlignItems}>`
+                        html += `<td id="${node.name}" ${primaryAxisAlignItems}><table><tr>`
                         for (const child of node.children) {
                             html += await processChildNode(child)
                         }
-                        html += `</td></tr>`
+                        html += `</tr></table></td>`
                     } else if (node.layoutMode === 'VERTICAL' && node.name != 'Image Frame') {
                         html += `<td id="${node.name}, ${node.parent.layoutMode}" style="vertical-align: top; ${extractStyles(node)}" ${primaryAxisAlignItems}><table id="${
                             node.name
@@ -291,6 +291,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                             html += await processChildNode(child)
                         }
                         html += `</table></td>`
+                        html += `<td id="gap" width="${gap}"></td>`
                     } else if (isNodeWithImageFill(node) === true) {
                         if (node.parent.layoutMode === 'HORIZONTAL') {
                             html += `<td width="${node.width}" height="${node.height}" style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td>\n`
@@ -322,7 +323,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                             html += `<tr width="${node.width}" height="${node.height}"> <td style="display: inline-block;"><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td> </tr>\n`
                             html += `<tr id="gap" width="${gap}" style="height: 100%;"> </tr>`
                         } else {
-                            html += `<tr id="problem" width="${node.width}" height="${node.height}"> <td><img src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td> </tr>\n`
+                            html += `<tr id="problem" width="${node.width}" height="${node.height}"> <td><img style='display: block' src="https://parametr.space/media/cache/homepage_about_image_xxl/uploads/47/kuvekino_04_1713956437.jpg" width="${node.width}" height="${node.height}"></td> </tr>\n`
                             html += `<tr id="gap" height="${gap}" style="width: 100%;"> </tr>`
                         }
                     }
@@ -336,21 +337,22 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
             var gap = parent.itemSpacing || 0          
             var index = parent.children.indexOf(node)
             var isLastChild = index === parent.children.length - 1
+            var centerAlignAttr = getAlignCenterAttribute(node);
             if (isLastChild) {
                 if (node.parent.layoutMode === 'HORIZONTAL') {
                     let parentLayout = node.parent.layoutMode === 'HORIZONTAL' ? `display: inline-block;` : ``
-                    html += `<td width="${node.width}" height=${node.height} style="padding: 0; ${parentLayout} ${extractStyles(node)}">${await getTextContent(node)}</td>\n`
+                    html += `<td ${centerAlignAttr} width="${node.width}" height=${node.height} style="padding: 0; ${parentLayout} ${extractStyles(node)}">${await getTextContent(node)}</td>\n`
                 } else {
-                    html += `<tr id="${'AAAAAAAAAAAAAAAAAAA'}" width="${node.width}" height=${node.height}><td style="vertical-align: top;padding: 0; ${extractStyles(node)}">${await getTextContent(
+                    html += `<tr ${centerAlignAttr} id="${'AAAAAAAAAAAAAAAAAAA'}" width="${node.width}" height=${node.height}><td ${centerAlignAttr} style="vertical-align: top;padding: 0; ${extractStyles(node)}">${await getTextContent(
                         node,
                     )}</td></tr>\n`
                 }    
             } else {
                 if (node.parent.layoutMode === 'HORIZONTAL') {
                     let parentLayout = node.parent.layoutMode === 'HORIZONTAL' ? `display: inline-block;` : ``
-                    html += `<td width="${node.width}" height=${node.height} style="padding: 0; ${parentLayout} ${extractStyles(node)}">${await getTextContent(node)}</td>\n`
+                    html += `<td ${centerAlignAttr} width="${node.width}" height=${node.height} style="padding: 0; ${parentLayout} ${extractStyles(node)}">${await getTextContent(node)}</td>\n`
                 } else {
-                    html += `<tr id="${'AAAAAAAAAAAAAAAAAAA'}" width="${node.width}" height=${node.height}><td style="vertical-align: top;padding: 0; ${extractStyles(node)}">${await getTextContent(
+                    html += `<tr ${centerAlignAttr} id="${'AAAAAAAAAAAAAAAAAAA'}" width="${node.width}" height=${node.height}><td ${centerAlignAttr} style="vertical-align: top;padding: 0; ${extractStyles(node)}">${await getTextContent(
                         node,
                     )}</td></tr>\n`
                     html += `<tr id="gap" height="${gap}"></tr>`
