@@ -111,7 +111,7 @@ function extractStyles(node: SceneNode): string {
             const { r, g, b } = fill.color
             const alpha = fill.opacity !== undefined ? fill.opacity : 1
             const color = `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`
-            styles.push(`color: ${color};`)
+            styles.push(`color: ${color} !important;`)
         }
     }
 
@@ -278,7 +278,7 @@ table-layout: fixed; width: ${maxWidth}px; height: auto">`
                 console.log(gap)
                 if (node.parent.layoutMode === 'HORIZONTAL') {
                     if (node.layoutMode === 'HORIZONTAL' && node.name != 'Image Frame') {
-                        html += `<td id="${node.name}" ${primaryAxisAlignItems}><table><tr>`
+                        html += `<td id="${node.name} HELP" ${primaryAxisAlignItems}><table><tr id="HELP">`
                         for (const child of node.children) {
                             html += await processChildNode(child)
                         }
